@@ -1,5 +1,16 @@
+import os
 import random
 import sys
+import twitter
+
+
+api = twitter.Api(consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
+                  consumer_secret=os.environ["TWITTER_CONSUMER_SECRET"],
+                  access_token_key=os.environ["TWITTER_ACCESS_TOKEN_KEY"],
+                  access_token_secret=os.environ["TWITTER_ACCESS_TOKEN_SECRET"])
+
+
+
 
 def open_and_read_file(file_path):
     """Takes file path as string; returns text as string.
@@ -59,7 +70,9 @@ def make_text(chains):
             text = text + " " + chosen_word  # add a random word from chains key
         our_key = new_key
 
-    return text + " " + new_key[1]
+    text = text + " " + new_key[1]
+
+    return text[:140]
 
 
 input_path = sys.argv[1]
@@ -73,4 +86,12 @@ chains = make_chains(input_text)
 # Produce random text
 random_text = make_text(chains)
 
-print random_text
+#print random_text
+
+while True:
+    status = api.PostUpdate(make_text(chains))
+    print status.text
+    twitter_again = raw_input("Enter the tweet again [q to quit] > ")
+
+    if twitter_again == 'q':
+        break
